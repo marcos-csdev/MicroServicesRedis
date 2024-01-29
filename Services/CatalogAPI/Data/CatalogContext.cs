@@ -3,12 +3,12 @@ using MongoDB.Driver;
 
 namespace CatalogAPI.Data
 {
-    public class CatalogContext
+    public class CatalogContext : ICatalogContext
     {
-        public IMongoCollection<Product> Products { get;  }
+        public IMongoCollection<Product> Products { get; }
 
 
-        public CatalogContext(IConfiguration configuration) 
+        public CatalogContext(IConfiguration configuration)
         {
             var client = new MongoClient(GetConfigValue(configuration, "ConnectionString"));
 

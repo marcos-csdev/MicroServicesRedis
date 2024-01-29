@@ -7,7 +7,7 @@ namespace CatalogAPI.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public required string Id { get; set; }
+        public required int Id { get; set; }
 
         [BsonElement("Name")]
         public string Name { get; set; } = string.Empty;

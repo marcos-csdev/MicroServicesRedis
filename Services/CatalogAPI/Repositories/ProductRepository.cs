@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace CatalogAPI.Repositories
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly ICatalogContext _dbContext;
 
@@ -14,7 +14,7 @@ namespace CatalogAPI.Repositories
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext)); ;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
             return await _dbContext
                 .Products
@@ -22,7 +22,7 @@ namespace CatalogAPI.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Product> GetProductById(int id)
+        public async Task<Product> GetProductByIdAsync(string id)
         {
             return await _dbContext
                 .Products
@@ -30,7 +30,7 @@ namespace CatalogAPI.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Product> GetProductByName(string name)
+        public async Task<Product> GetProductByNameAsync(string name)
         {
             return await _dbContext
                 .Products
@@ -38,7 +38,7 @@ namespace CatalogAPI.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetProductByCategory(string categoryName)
+        public async Task<IEnumerable<Product>> GetProductByCategoryAsync(string categoryName)
         {
 
             return await _dbContext
@@ -47,14 +47,14 @@ namespace CatalogAPI.Repositories
                             .ToListAsync();
         }
 
-        public async Task CreateProduct(Product product)
+        public async Task CreateProductAsync(Product product)
         {
             await _dbContext
                 .Products
                 .InsertOneAsync(product);
         }
 
-        public async Task<bool> DeleteProduct(int id)
+        public async Task<bool> DeleteProductAsync(string id)
         {
             var delete = await _dbContext
                 .Products
@@ -63,7 +63,7 @@ namespace CatalogAPI.Repositories
             return delete.IsAcknowledged && delete.DeletedCount > 0;
         }
 
-        public async Task<bool> UpdateProduct(Product product)
+        public async Task<bool> UpdateProductAsync(Product product)
         {
             var update = await _dbContext
                 .Products

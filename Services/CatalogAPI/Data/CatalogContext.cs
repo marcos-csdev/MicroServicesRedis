@@ -1,9 +1,10 @@
 ﻿using CatalogAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 
 namespace CatalogAPI.Data
 {
-    public class CatalogContext : ICatalogContext
+    public class CatalogContext : DbContext, ICatalogContext
     {
         public IMongoCollection<Product> Products { get; }
 

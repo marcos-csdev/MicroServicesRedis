@@ -1,3 +1,4 @@
+# ENVIRONMENT-BASED DOCKER-COMPOSE FILE
 version: '3.4'
 
 services:
@@ -17,8 +18,9 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
         # NO LOCALHOST HERE, INSIDE A CONTAINER, ONLY USE CONTAINER NAMES
       - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-    # IF THERE'S ANY PROBLEM WITH THE DB, STOP THE CONTAINER
+        # IF THERE'S ANY PROBLEM WITH THE DB, STOP THE CONTAINER
     depends_on:
       - catalogdb
     ports:
-      - "8080"
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8000:8080"

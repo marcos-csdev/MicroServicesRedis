@@ -4,9 +4,6 @@ namespace ShoppingCartAPI.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        private readonly Serilog.ILogger _logger;
     }
 }

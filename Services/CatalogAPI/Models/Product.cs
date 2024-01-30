@@ -10,7 +10,7 @@ namespace CatalogAPI.Models
         public required string Id { get; set; }
 
         [BsonElement("Name")]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
         public string Category { get; set; } = string.Empty;
         public string? Summary { get; set; }
         public string? Description { get; set; }

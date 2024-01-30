@@ -1,5 +1,7 @@
 # MicroServicesRedis
 
+A couple of microservices implementing e-commerce modules over Catalog, Shopping Cart, Discount and Ordering microservices with NoSQL (MongoDB, Redis) and Relational databases (PostgreSQL, Sql Server) with communicating over RabbitMQ Event Driven Communication and using Ocelot API Gateway.
+
 Installing
 Follow these steps to get your development environment set up: (Before Run Start the Docker Desktop)
 

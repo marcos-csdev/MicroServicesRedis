@@ -22,7 +22,7 @@ We have implemented below **features over the run-aspnetcore-microservices repos
 * Repository Pattern Implementation
 * Swagger Open API implementation	
 
-#### Basket microservice which includes;
+#### Shopping Cart microservice which includes;
 * ASP.NET Web API application
 * REST API principles, CRUD operations
 * **Redis database** connection and containerization

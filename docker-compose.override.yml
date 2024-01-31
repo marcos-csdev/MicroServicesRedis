@@ -24,3 +24,25 @@ services:
     ports:
         # EXTERNAL:INTERNAL PORT FORWARDING
       - "8000:8080"
+
+  shoppingcartcache:
+    container_name: shoppingcartcache
+    restart: always
+    ports:
+      - "6379:6379"
+    #volumes:
+    # - ./redis_data:/data
+      
+
+  shoppingcartapi:
+    container_name: shoppingcartapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - "CacheSettings:ConnectionString=shoppingcartcache:6379"
+    depends_on:
+      - shoppingcartcache
+    ports:
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8001:8080"
+

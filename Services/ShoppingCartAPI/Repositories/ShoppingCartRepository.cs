@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using StackExchange.Redis;
 using Newtonsoft.Json;
 using ShoppingCartAPI.Models;
 
@@ -6,22 +6,20 @@ namespace ShoppingCartAPI.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
     {
-        private readonly IDistributedCache _redisCache;
+        private readonly IDatabase _redisCache;
 
-        public ShoppingCartRepository(IDistributedCache redisCache)
+        public ShoppingCartRepository(IConnectionMultiplexer redisCache)
         {
-            _redisCache = redisCache ?? throw new ArgumentNullException(nameof(redisCache));
+            _redisCache = redisCache.GetDatabase();
         }
 
         public async Task<ShoppingCart?> GetCartAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName)) throw new ArgumentNullException("user name null when attempting to retrieve cart");
 
-            var json = await _redisCache.GetStringAsync(userName);
-
-            if (string.IsNullOrWhiteSpace(json)) return null;
-
-            var cart = JsonConvert.DeserializeObject<ShoppingCart>(json);
+            var redisValue = await _redisCache.StringGetAsync(userName);
+            
+            var cart = JsonConvert.DeserializeObject<ShoppingCart>(redisValue.ToString());
 
             return cart;
         }
@@ -34,7 +32,7 @@ namespace ShoppingCartAPI.Repositories
 
             if (json == null) return null!;
 
-            await _redisCache.SetStringAsync(shoppingCart.UserName, json);
+            await _redisCache.StringSetAsync(shoppingCart.UserName, json);
 
             return await GetCartAsync(shoppingCart.UserName);
         }
@@ -43,7 +41,7 @@ namespace ShoppingCartAPI.Repositories
         {
             if (string.IsNullOrWhiteSpace(userName)) throw new ArgumentNullException("user name null when attempting to delete cart");
 
-            await _redisCache.RemoveAsync(userName);
+            await _redisCache.KeyDeleteAsync(userName);
         }
     }
 }

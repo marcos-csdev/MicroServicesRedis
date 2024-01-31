@@ -24,7 +24,8 @@ namespace CatalogAPI.Controllers
             {
                 var products = await _productRepository.GetAllProductsAsync();
 
-                return Ok(products);
+                if (products != null)
+                    return Ok(products);
             }
             catch (Exception ex)
             {
@@ -34,14 +35,17 @@ namespace CatalogAPI.Controllers
             return Problem("Could not retrieve products");
         }
 
-        [HttpGet("{id:length(30)}",Name ="GetById")]
+        [HttpGet("{id:length(30)}", Name = "GetById")]
         public async Task<IActionResult> GetById(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("No id provided");
             try
             {
                 var product = await _productRepository.GetProductByIdAsync(id);
 
-                return Ok(product);
+                if (product != null)
+                    return Ok(product);
             }
             catch (Exception ex)
             {
@@ -55,10 +59,14 @@ namespace CatalogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetByCategory(string category)
         {
+            if (string.IsNullOrWhiteSpace(category)) 
+                return BadRequest("No category provided");
             try
             {
                 var product = await _productRepository.GetProductByCategoryAsync(category);
-                return Ok(product);
+
+                if (product != null)
+                    return Ok(product);
             }
             catch (Exception ex)
             {
@@ -71,11 +79,14 @@ namespace CatalogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
+
+            if (product == null) return BadRequest("No product provided");
+
             try
             {
                 await _productRepository.CreateProductAsync(product);
 
-                return Ok("Product successfully created");
+                return Created();
             }
             catch (Exception ex)
             {
@@ -88,6 +99,8 @@ namespace CatalogAPI.Controllers
         [HttpDelete("{id:length(30)}", Name = "Delete")]
         public async Task<IActionResult> Delete(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("No id provided");
             try
             {
                 var hasDeleted = await _productRepository.DeleteProductAsync(id);

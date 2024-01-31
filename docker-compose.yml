@@ -11,5 +11,17 @@ services:
       context: .
       dockerfile: Services/CatalogAPI/Dockerfile
 
+  shoppingcartcache:
+    # OFFICIAL REDIS IMAGE NAME
+    image: redis:alpine
+
+  shoppingcartapi:
+    image: ${DOCKER_REGISTRY-}shoppingcartapi
+    build:
+      context: .
+      dockerfile: Services/ShoppingCartAPI/Dockerfile
+
 volumes:
   mongo_data: 
+  redis_data:
+

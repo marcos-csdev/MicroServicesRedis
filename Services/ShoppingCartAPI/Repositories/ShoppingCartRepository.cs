@@ -18,13 +18,13 @@ namespace ShoppingCartAPI.Repositories
             if (string.IsNullOrWhiteSpace(userName)) throw new ArgumentNullException("user name null when attempting to retrieve cart");
 
             var redisValue = await _redisCache.StringGetAsync(userName);
-            
+
             var cart = JsonConvert.DeserializeObject<ShoppingCart>(redisValue.ToString());
 
             return cart;
         }
 
-        public async Task<ShoppingCart?> UpdateCartAsync(ShoppingCart shoppingCart)
+        public async Task<ShoppingCart?> UpsertCartAsync(ShoppingCart shoppingCart)
         {
             if (shoppingCart == null) throw new ArgumentNullException("null cart when attempting to update cart");
 

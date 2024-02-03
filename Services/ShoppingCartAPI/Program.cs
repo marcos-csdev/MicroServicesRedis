@@ -1,6 +1,8 @@
 
 using Serilog;
 using ShoppingCartAPI.Repositories;
+using NRedisStack;
+using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 
 namespace ShoppingCartAPI
@@ -51,17 +53,24 @@ namespace ShoppingCartAPI
         private static void AddRedis(WebApplicationBuilder builder)
         {
             // redis connection config 
+            var redisUrl = builder.Configuration.GetConnectionString("Redis");
+            //"redis-cache"
             builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
             {
-                var redisUrl = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
-                return ConnectionMultiplexer.Connect(redisUrl!);
+                var options = new ConfigurationOptions
+                {
+                    EndPoints = { { "redis-cache", 6379 } },
+                    User = "default",  // use your Redis user. More info https://redis.io/docs/management/security/acl/
+                    Password = "nopass", // use your Redis password
+                    Ssl = false,
+                    SslProtocols = System.Security.Authentication.SslProtocols.None,
+                    
+                };
+                return ConnectionMultiplexer.Connect(options);
             });
-            //builder.Services.AddDistributedMemoryCache();
-            //builder.Services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
-            //    options.InstanceName = "LocalRedis";
-            //});
+
+            
+
         }
     }
 }

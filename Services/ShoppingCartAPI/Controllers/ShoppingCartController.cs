@@ -26,24 +26,26 @@ namespace ShoppingCartAPI.Controllers
             {
                 var cart = await _cartRepository.GetCartAsync(userName);
 
-                if (cart != null) return Ok(cart); 
+                if (cart != null) return Ok(cart);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
+
+                return Problem($"{ex.Message} ");
             }
 
             return Problem("Could not retrieve cart");
         }
 
-        [HttpPut("Update")]
+        [HttpPost("Update")]
         public async Task<IActionResult> Update(ShoppingCart shoppingCart)
         {
             if (shoppingCart == null)
                 return BadRequest("No cart provided");
             try
             {
-                var result = await _cartRepository.UpdateCartAsync(shoppingCart);
+                var result = await _cartRepository.UpsertCartAsync(shoppingCart);
 
                 if (result != null) return Ok("Update successful");
             }

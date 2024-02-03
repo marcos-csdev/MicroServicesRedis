@@ -12,6 +12,7 @@
 
         public ShoppingCart(string userName)
         {
+            Items = new List<ShoppingCartItem>();
             UserName = userName;
         }
 
@@ -20,9 +21,9 @@
             get
             {
                 decimal totalprice = 0;
-                foreach (var item in Items)
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    totalprice += item.Price * item.Quantity;
+                    totalprice += Items[i].Price * Items[i].Quantity;
                 }
                 return totalprice;
             }

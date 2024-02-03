@@ -1,27 +1,81 @@
-version: '3.4'
+version: '3.9'
+
+networks:
+  sc-network:
+    driver: bridge
 
 services:
+
+#=======================CATALOG API==============================
   catalogdb:
     # OFFICIAL MONGO IMAGE NAME
     image: mongo
-
+    container_name: catalogdb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      # AS STATED IN THE CAVEATS SECTION AT https://hub.docker.com/_/mongo
+      - mongo_data:/data/db 
+    networks:
+      - sc-network
+    
   catalogapi:
+    container_name: catalogapi
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/CatalogAPI/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+        # NO LOCALHOST HERE, INSIDE A CONTAINER, ONLY USE CONTAINER NAMES
+      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+        # IF THERE'S ANY PROBLEM WITH THE DB, STOP THE CONTAINER
+    depends_on:
+      - catalogdb
+    ports:
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8000:8080"
+    networks:
+      - sc-network
+      
+#=======================SHOPPING CART API========================
 
-  shoppingcartcache:
-    # OFFICIAL REDIS IMAGE NAME
-    image: redis:alpine
 
   shoppingcartapi:
-    image: ${DOCKER_REGISTRY-}shoppingcartapi
+    image: shoppingcartapi
     build:
       context: .
       dockerfile: Services/ShoppingCartAPI/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - "ConnectionStrings:Redis=redis://localhost:6379"
+    ports:
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8001:8080"
+    depends_on:
+      - redis-cache
+    networks:
+      - sc-network
+
+  redis-cache:
+    # OFFICIAL REDIS IMAGE NAME
+    image: redis
+    container_name: sc-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /path/to/redis-persistence:/bitnami/redis/data
+    networks:
+      - sc-network
 
 volumes:
   mongo_data: 
-  redis_data:
+  # redis_data:
+
 

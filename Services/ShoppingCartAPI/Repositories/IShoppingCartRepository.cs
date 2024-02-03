@@ -6,6 +6,6 @@ namespace ShoppingCartAPI.Repositories
     {
         Task DeleteCartAsync(string userName);
         Task<ShoppingCart?> GetCartAsync(string userName);
-        Task<ShoppingCart?> UpdateCartAsync(ShoppingCart shoppingCart);
+        Task<ShoppingCart?> UpsertCartAsync(ShoppingCart shoppingCart);
     }
 }

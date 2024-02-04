@@ -1,0 +1,47 @@
+# ENVIRONMENT-BASED DOCKER-COMPOSE FILE
+version: '3.9'
+
+services:
+#=======================CATALOG API==============================
+  catalogdb:
+    container_name: catalogdb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      # AS STATED IN THE CAVEATS SECTION AT https://hub.docker.com/_/mongo
+      - mongo_data:/data/db   
+
+  catalogapi:
+    container_name: catalogapi
+    depends_on:
+      - catalogdb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+        # NO LOCALHOST HERE, INSIDE A CONTAINER, ONLY USE CONTAINER NAMES
+      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+        # IF THERE'S ANY PROBLEM WITH THE DB, STOP THE CONTAINER
+    ports:
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8000:8080"
+      
+#=======================SHOPPING CART API========================
+  redis-cache:
+    container_name: sc-redis
+    restart: always
+    ports:
+      - "6379:6379"
+      
+  shoppingcartapi:
+    container_name: shoppingcartapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - "ConnectionStrings:Redis=redis://localhost:6379"
+    ports:
+        # EXTERNAL:INTERNAL PORT FORWARDING
+      - "8001:8080"
+    depends_on:
+      - redis-cache
+

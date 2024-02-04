@@ -6,31 +6,12 @@ services:
   catalogdb:
     # OFFICIAL MONGO IMAGE NAME
     image: mongo
-    container_name: catalogdb
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      # AS STATED IN THE CAVEATS SECTION AT https://hub.docker.com/_/mongo
-      - mongo_data:/data/db 
     
   catalogapi:
-    container_name: catalogapi
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/CatalogAPI/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-        # NO LOCALHOST HERE, INSIDE A CONTAINER, ONLY USE CONTAINER NAMES
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-        # IF THERE'S ANY PROBLEM WITH THE DB, STOP THE CONTAINER
-    depends_on:
-      - catalogdb
-    ports:
-        # EXTERNAL:INTERNAL PORT FORWARDING
-      - "8000:8080"
       
 #=======================SHOPPING CART API========================
 
@@ -40,23 +21,10 @@ services:
     build:
       context: .
       dockerfile: Services/ShoppingCartAPI/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - "ConnectionStrings:Redis=redis://localhost:6379"
-    ports:
-        # EXTERNAL:INTERNAL PORT FORWARDING
-      - "8001:8080"
-    depends_on:
-      - redis-cache
 
   redis-cache:
     # OFFICIAL REDIS IMAGE NAME
-    image: redis
-    container_name: sc-redis
-    restart: always
-    ports:
-      - "6379:6379"
+    image: redis:alpine
 
 volumes:
   mongo_data: 

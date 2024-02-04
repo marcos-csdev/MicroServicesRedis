@@ -38,8 +38,8 @@ namespace ShoppingCartAPI.Controllers
             return Problem("Could not retrieve cart");
         }
 
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update(ShoppingCart shoppingCart)
+        [HttpPost("Upsert")]
+        public async Task<IActionResult> Upsert(ShoppingCart shoppingCart)
         {
             if (shoppingCart == null)
                 return BadRequest("No cart provided");

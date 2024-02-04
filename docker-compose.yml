@@ -1,9 +1,5 @@
 version: '3.9'
 
-networks:
-  sc-network:
-    driver: bridge
-
 services:
 
 #=======================CATALOG API==============================
@@ -17,8 +13,6 @@ services:
     volumes:
       # AS STATED IN THE CAVEATS SECTION AT https://hub.docker.com/_/mongo
       - mongo_data:/data/db 
-    networks:
-      - sc-network
     
   catalogapi:
     container_name: catalogapi
@@ -37,8 +31,6 @@ services:
     ports:
         # EXTERNAL:INTERNAL PORT FORWARDING
       - "8000:8080"
-    networks:
-      - sc-network
       
 #=======================SHOPPING CART API========================
 
@@ -57,22 +49,14 @@ services:
       - "8001:8080"
     depends_on:
       - redis-cache
-    networks:
-      - sc-network
 
   redis-cache:
     # OFFICIAL REDIS IMAGE NAME
     image: redis
     container_name: sc-redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
     restart: always
     ports:
       - "6379:6379"
-    volumes:
-      - /path/to/redis-persistence:/bitnami/redis/data
-    networks:
-      - sc-network
 
 volumes:
   mongo_data: 

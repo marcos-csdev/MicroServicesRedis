@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option csharp_namespace = "Discount.gRPC.Protos";
+
+service DiscountProtoService{
+    rpc 
+}
+
+message GetDiscountRequest{
+    string
+}

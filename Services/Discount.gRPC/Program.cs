@@ -1,4 +1,6 @@
+using Discount.gRPC.Data;
 using Discount.gRPC.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Discount.gRPC
 {
@@ -9,6 +11,10 @@ namespace Discount.gRPC
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<DiscountContext>(option =>
+            {
+                option.UseNpgsql(builder.Configuration.GetConnectionString("npgsql"));
+            });
             builder.Services.AddGrpc();
 
             var app = builder.Build();

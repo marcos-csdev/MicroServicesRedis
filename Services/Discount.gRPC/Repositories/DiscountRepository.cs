@@ -1,63 +1,72 @@
-﻿using Discount.gRPC.Data;
+﻿using Dapper;
+using Discount.gRPC.Data;
 using Discount.gRPC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Discount.gRPC.Repositories
 {
-    public class DiscountRepository : IDiscountRepository
+    public class DiscountRepository(IConfiguration configuration) : IDiscountRepository
     {
-        private readonly DiscountContext _dbContext;
+        private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-        public DiscountRepository(DiscountContext dbContext)
+        public async Task<Coupon> GetDiscountAsync(string productName)
         {
-            _dbContext = dbContext;
-        }
+            using var connection = new NpgsqlConnection
+                (_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-        public async Task<Coupon?> GetDiscount(string productName)
-        {
-            if (productName == null) return null;
+            var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
+                ("SELECT * FROM Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
 
-            var coupon = await _dbContext.Coupon.FirstOrDefaultAsync(cpn => cpn.ProductName == productName);
+            if (coupon == null)
+                return new Coupon
+                { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
 
             return coupon;
         }
 
-        public async Task<int> CreateDiscount(Coupon coupon)
+        public async Task<bool> CreateDiscountAsync(Coupon coupon)
         {
-            if (coupon == null) return 0;
+            using var connection = new NpgsqlConnection
+                (_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-            await _dbContext.Coupon.AddAsync(coupon);
-            var changes = _dbContext.SaveChanges();
+            var affected =
+                await connection.ExecuteAsync
+                    ("INSERT INTO Coupon (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
+                            new { coupon.ProductName, coupon.Description, coupon.Amount });
 
-            return changes;
+            if (affected == 0)
+                return false;
+
+            return true;
         }
 
-        public int UpdateDiscount(Coupon coupon)
+        public async Task<bool> UpdateDiscountAsync(Coupon coupon)
         {
-            if (coupon == null) return 0;
+            using var connection = new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-            _dbContext.Coupon.Update(coupon);
-            var changes = _dbContext.SaveChanges();
+            var affected = await connection.ExecuteAsync
+                    ("UPDATE Coupon SET ProductName=@ProductName, Description = @Description, Amount = @Amount WHERE Id = @Id",
+                            new { coupon.ProductName, coupon.Description, coupon.Amount, coupon.Id });
 
-            return changes;
+            if (affected == 0)
+                return false;
+
+            return true;
         }
 
-        public async Task<int> DeleteDiscount(int id)
+        public async Task<bool> DeleteDiscountAsync(string productName)
         {
-            if (id < 1) return 0;
+            using var connection = new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
-            var coupon = await _dbContext.Coupon.FirstOrDefaultAsync(cpn =>
-            cpn.Id == id);
+            var affected = await connection.ExecuteAsync("DELETE FROM Coupon WHERE ProductName = @ProductName",
+                new { productName });
 
-            if (coupon == null) return 0;
+            if (affected == 0)
+                return false;
 
-            _dbContext.Coupon.Remove(coupon);
-
-            var changes = _dbContext.SaveChanges();
-
-            return changes;
-
+            return true;
         }
     }
 }

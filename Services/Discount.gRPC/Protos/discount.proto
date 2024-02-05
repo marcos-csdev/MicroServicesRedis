@@ -1,11 +1,41 @@
 syntax = "proto3";
 
+// namespace to place the generated class in
 option csharp_namespace = "Discount.gRPC.Protos";
 
+// API
 service DiscountProtoService{
-    rpc 
+    rpc GetDiscount(GetDiscountRequest) returns (CouponModel);
+    rpc CreateDiscount(CreateDiscountRequest) returns (CouponModel);
+    rpc UpdateDiscount(UpdateDiscountRequest) returns (CouponModel);
+    rpc DeleteDiscount(DeleteDiscountRequest) returns (DeleteDiscountResponse);
 }
 
+//COMPLEX TYPE
+message CouponModel{
+    //MEMBERS ARE ASSIGED BY ORDER => 1, 2, 3, 4, ...
+    int32 id = 1;
+    string productName = 2;
+    string description = 3;
+    int32 amount = 4;
+}
+//COMPLEX TYPE
 message GetDiscountRequest{
-    string
+    string productName = 1;
+}
+
+message CreateDiscountRequest{
+    string coupon = 1;
+}
+
+message UpdateDiscountRequest{
+    string coupon = 1;
+}
+
+message DeleteDiscountRequest{
+    string productName = 1;
+}
+
+message DeleteDiscountResponse{
+    bool success = 1;
 }

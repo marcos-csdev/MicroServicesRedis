@@ -38,7 +38,7 @@ namespace CatalogAPI
 
             app.Run();
 
-            void AddSeriLog(WebApplicationBuilder builder)
+            static void AddSeriLog(WebApplicationBuilder builder)
             {
                 builder.Host.UseSerilog((fileContext, loggingConfig) =>
                 {

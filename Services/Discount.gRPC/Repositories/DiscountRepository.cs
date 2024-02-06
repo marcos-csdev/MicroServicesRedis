@@ -11,10 +11,14 @@ namespace Discount.gRPC.Repositories
     {
         private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
+        private NpgsqlConnection GetConnectionString()
+        {
+            return new NpgsqlConnection
+                (_configuration.GetConnectionString("npgsql"));
+        }
         public async Task<Coupon> GetDiscountAsync(string productName)
         {
-            using var connection = new NpgsqlConnection
-                (_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            using var connection = GetConnectionString();
 
             var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
                 ("SELECT * FROM Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
@@ -28,8 +32,7 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> CreateDiscountAsync(Coupon coupon)
         {
-            using var connection = new NpgsqlConnection
-                (_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            using var connection = GetConnectionString();
 
             var affected =
                 await connection.ExecuteAsync
@@ -44,7 +47,7 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> UpdateDiscountAsync(Coupon coupon)
         {
-            using var connection = new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            using var connection = GetConnectionString();
 
             var affected = await connection.ExecuteAsync
                     ("UPDATE Coupon SET ProductName=@ProductName, Description = @Description, Amount = @Amount WHERE Id = @Id",
@@ -58,7 +61,7 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> DeleteDiscountAsync(string productName)
         {
-            using var connection = new NpgsqlConnection(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            using var connection = GetConnectionString();
 
             var affected = await connection.ExecuteAsync("DELETE FROM Coupon WHERE ProductName = @ProductName",
                 new { productName });

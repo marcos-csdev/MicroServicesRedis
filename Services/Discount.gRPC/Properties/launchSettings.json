@@ -1,13 +1,6 @@
 {
   "profiles": {
-    "https": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7222;http://localhost:5025"
-    },
+    
     "Discount.gRPC": {
       "commandName": "Project",
       "environmentVariables": {

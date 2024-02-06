@@ -1,9 +1,9 @@
-
+using Microsoft.Extensions.Configuration;
 using Serilog;
+using ShoppingCartAPI.gRPCServices;
 using ShoppingCartAPI.Repositories;
-using NRedisStack;
-using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
+using static Discount.gRPC.Protos.DiscountProtoService;
 
 namespace ShoppingCartAPI
 {
@@ -18,6 +18,11 @@ namespace ShoppingCartAPI
 
             builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 
+            builder.Services.AddGrpcClient<DiscountProtoServiceClient>(option =>
+            {
+                option.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSettings:DiscountUrl")!);
+            });
+            builder.Services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -41,7 +46,7 @@ namespace ShoppingCartAPI
 
             app.Run();
 
-            void AddSeriLog(WebApplicationBuilder builder)
+            static void AddSeriLog(WebApplicationBuilder builder)
             {
                 builder.Host.UseSerilog((fileContext, loggingConfig) =>
                 {
@@ -64,12 +69,12 @@ namespace ShoppingCartAPI
                     Password = "nopass", // use your Redis password
                     Ssl = false,
                     SslProtocols = System.Security.Authentication.SslProtocols.None,
-                    
+
                 };
                 return ConnectionMultiplexer.Connect(options);
             });
 
-            
+
 
         }
     }

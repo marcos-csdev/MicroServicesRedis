@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShoppingCartAPI.gRPCServices;
 using ShoppingCartAPI.Models;
 using ShoppingCartAPI.Repositories;
 
@@ -6,16 +7,11 @@ namespace ShoppingCartAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ShoppingCartController : Controller
+    public class ShoppingCartController(IShoppingCartRepository cartRepository, Serilog.ILogger logger, IDiscountGrpcService discountGrpcService) : Controller
     {
-        private readonly Serilog.ILogger _logger;
-        private readonly IShoppingCartRepository _cartRepository;
-
-        public ShoppingCartController(IShoppingCartRepository cartRepository, Serilog.ILogger logger)
-        {
-            _cartRepository = cartRepository;
-            _logger = logger;
-        }
+        private readonly Serilog.ILogger _logger = logger;
+        private readonly IShoppingCartRepository _cartRepository = cartRepository;
+        private readonly IDiscountGrpcService _discountGrpcService;
 
         [HttpGet("{userName:maxlength(30)}", Name = "Get")]
         public async Task<IActionResult> Get(string userName)
@@ -45,6 +41,15 @@ namespace ShoppingCartAPI.Controllers
                 return BadRequest("No cart provided");
             try
             {
+                //recalculates the current total price in the cart
+                foreach (var item in shoppingCart.Items)
+                {
+                    var coupon = await _discountGrpcService.GetDiscountAsync(item.ProductName);
+
+                    //removing price from total
+                    item.Price -= coupon.Amount;
+                }
+
                 var result = await _cartRepository.UpsertCartAsync(shoppingCart);
 
                 if (result != null) return Ok("Update successful");

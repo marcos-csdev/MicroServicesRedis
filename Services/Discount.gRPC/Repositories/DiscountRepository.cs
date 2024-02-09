@@ -23,7 +23,7 @@ namespace Discount.gRPC.Repositories
             {
                 using var connection = GetConnectionString();
 
-                var query = "SELECT * FROM Coupon WHERE ProductName = @ProductName";
+                var query = "SELECT * FROM \"Coupon\" WHERE \"ProductName\" = @ProductName";
                 var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
                 (query, new { ProductName = productName });
 
@@ -49,7 +49,7 @@ namespace Discount.gRPC.Repositories
 
             var affected =
                 await connection.ExecuteAsync
-                    ("INSERT INTO Coupon (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
+                    ("INSERT INTO \"Coupon\" (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
                             new { coupon.ProductName, coupon.Description, coupon.Amount });
 
             if (affected == 0)
@@ -58,12 +58,13 @@ namespace Discount.gRPC.Repositories
             return true;
         }
 
+
         public async Task<bool> UpdateDiscountAsync(Coupon coupon)
         {
             using var connection = GetConnectionString();
 
             var affected = await connection.ExecuteAsync
-                    ("UPDATE Coupon SET ProductName=@ProductName, Description = @Description, Amount = @Amount WHERE Id = @Id",
+                    ("UPDATE \"Coupon\" SET \"ProductName\"=@ProductName, \"Description\" = @Description, \"Amount\" = @Amount WHERE \"Id\" = @Id",
                             new { coupon.ProductName, coupon.Description, coupon.Amount, coupon.Id });
 
             if (affected == 0)
@@ -76,7 +77,7 @@ namespace Discount.gRPC.Repositories
         {
             using var connection = GetConnectionString();
 
-            var affected = await connection.ExecuteAsync("DELETE FROM Coupon WHERE ProductName = @ProductName",
+            var affected = await connection.ExecuteAsync("DELETE FROM \"Coupon\" WHERE \"ProductName\" = @ProductName",
                 new { productName });
 
             if (affected == 0)

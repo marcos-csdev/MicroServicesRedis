@@ -1,4 +1,5 @@
 ﻿
+using AutoBogus;
 using Discount.gRPC.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ namespace Discount.gRPC.Data
             //without this command migrations will throw a primary key error 
             base.OnModelCreating(modelBuilder);
 
+            var coupons = AutoFaker.Generate<Coupon>(8);
+            modelBuilder.Entity<Coupon>().HasData(coupons);
         }
     }
 }

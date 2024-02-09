@@ -12,5 +12,7 @@ namespace ShoppingCartAPI.gRPCServices
 
             return await _gRPCService.GetDiscountAsync(request);
         }
+
+
     }
 }

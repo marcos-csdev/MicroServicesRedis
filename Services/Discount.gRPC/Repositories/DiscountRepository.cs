@@ -13,21 +13,34 @@ namespace Discount.gRPC.Repositories
 
         private NpgsqlConnection GetConnectionString()
         {
+            var connectionString = _configuration.GetConnectionString("npgsql");
             return new NpgsqlConnection
-                (_configuration.GetConnectionString("npgsql"));
+                (connectionString);
         }
         public async Task<Coupon> GetDiscountAsync(string productName)
         {
-            using var connection = GetConnectionString();
+            try
+            {
+                using var connection = GetConnectionString();
 
-            var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
-                ("SELECT * FROM Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
+                var query = "SELECT * FROM Coupon WHERE ProductName = @ProductName";
+                var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
+                (query, new { ProductName = productName });
 
-            if (coupon == null)
-                return new Coupon
-                { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
 
-            return coupon;
+                if (coupon == null)
+                    return new Coupon
+                    { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
+
+                return coupon;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
         }
 
         public async Task<bool> CreateDiscountAsync(Coupon coupon)

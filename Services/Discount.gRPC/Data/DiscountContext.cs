@@ -1,4 +1,5 @@
-﻿using Discount.gRPC.Models;
+﻿
+using Discount.gRPC.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Discount.gRPC.Data
@@ -10,10 +11,12 @@ namespace Discount.gRPC.Data
         {
         }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //without this command migrations will throw a primary key error 
             base.OnModelCreating(modelBuilder);
+
         }
     }
 }

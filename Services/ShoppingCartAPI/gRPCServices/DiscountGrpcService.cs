@@ -2,15 +2,11 @@
 
 namespace ShoppingCartAPI.gRPCServices
 {
-    public class DiscountGrpcService : IDiscountGrpcService
+    public class DiscountGrpcService(DiscountProtoService.DiscountProtoServiceClient gRPCService) : IDiscountGrpcService
     {
-        private readonly DiscountProtoService.DiscountProtoServiceClient _gRPCService;
+        private readonly DiscountProtoService.DiscountProtoServiceClient _gRPCService = gRPCService;
 
-        public DiscountGrpcService(DiscountProtoService.DiscountProtoServiceClient gRPCService)
-        {
-            _gRPCService = gRPCService;
-        }
-        public async Task<CouponModel> GetDiscountAsync(string productName)
+        public async Task<CouponModel> GetDiscount(string productName)
         {
             var request = new GetDiscountRequest { ProductName = productName };
 

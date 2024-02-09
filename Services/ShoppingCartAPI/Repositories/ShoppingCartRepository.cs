@@ -1,6 +1,7 @@
 ﻿using StackExchange.Redis;
 using Newtonsoft.Json;
 using ShoppingCartAPI.Models;
+using ShoppingCartAPI.Data;
 
 namespace ShoppingCartAPI.Repositories
 {
@@ -11,6 +12,20 @@ namespace ShoppingCartAPI.Repositories
         public ShoppingCartRepository(IConnectionMultiplexer redisCache)
         {
             _redisCache = redisCache.GetDatabase();
+
+            SeedData();
+        }
+
+        private void SeedData()
+        {
+
+            var carts = ShoppingCartGenerator.SeedCarts(8);
+
+            for (int i = 0; i < carts.Count; i++)
+            {
+                var json = JsonConvert.SerializeObject(carts[i]);
+                _redisCache.SetAdd($"cart:{i}", json);
+            }
         }
 
         public async Task<ShoppingCart?> GetCartAsync(string userName)

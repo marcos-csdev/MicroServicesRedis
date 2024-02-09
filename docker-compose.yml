@@ -14,8 +14,6 @@ services:
       dockerfile: Services/CatalogAPI/Dockerfile
       
 #=======================SHOPPING CART API========================
-
-
   shoppingcartapi:
     image: shoppingcartapi
     build:
@@ -25,9 +23,16 @@ services:
   redis-cache:
     # OFFICIAL REDIS IMAGE NAME
     image: redis:alpine
+    
+#=======================DISCOUNT gRPC========================
+  discountdb:
+    image: postgres
+  pgadmin:
+    image: dpage/pgadmin4
 
 volumes:
   mongo_data: 
-  # redis_data:
+  postgres_data:
+  pgadmin_data:
 
 

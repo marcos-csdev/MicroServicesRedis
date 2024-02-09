@@ -11,7 +11,7 @@ namespace ShoppingCartAPI.Controllers
     {
         private readonly Serilog.ILogger _logger = logger;
         private readonly IShoppingCartRepository _cartRepository = cartRepository;
-        private readonly IDiscountGrpcService _discountGrpcService;
+        private readonly IDiscountGrpcService _discountGrpcService = discountGrpcService;
 
         [HttpGet("{userName:maxlength(30)}", Name = "Get")]
         public async Task<IActionResult> Get(string userName)
@@ -44,7 +44,7 @@ namespace ShoppingCartAPI.Controllers
                 //recalculates the current total price in the cart
                 foreach (var item in shoppingCart.Items)
                 {
-                    var coupon = await _discountGrpcService.GetDiscountAsync(item.ProductName);
+                    var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
 
                     //removing price from total
                     item.Price -= coupon.Amount;

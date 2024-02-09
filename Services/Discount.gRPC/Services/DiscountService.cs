@@ -62,12 +62,19 @@ namespace Discount.gRPC.Services
             if (request == null) return null!;
 
             var coupon = _mapper.Map<Coupon>(request.Coupon);
-            var isUpdated = await _repository.UpdateDiscountAsync(coupon);
-
-            if (isUpdated == false)
+            try
             {
-                var message = $"Could not update coupon {coupon.ProductName} ";
-                DisplayError(message, StatusCode.Internal);
+                var isUpdated = await _repository.UpdateDiscountAsync(coupon);
+
+                if (isUpdated == false)
+                {
+                    var message = $"Could not update coupon {coupon.ProductName} ";
+                    DisplayError(message, StatusCode.Internal);
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayError(ex.Message, StatusCode.Internal);
             }
 
             var couponModel = _mapper.Map<CouponModel>(coupon);

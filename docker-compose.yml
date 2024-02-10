@@ -15,7 +15,7 @@ services:
       
 #=======================SHOPPING CART API========================
   shoppingcartapi:
-    image: shoppingcartapi
+    image: ${DOCKER_REGISTRY-}shoppingcartapi
     build:
       context: .
       dockerfile: Services/ShoppingCartAPI/Dockerfile
@@ -30,9 +30,16 @@ services:
   pgadmin:
     image: dpage/pgadmin4
 
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount.gRPC/Dockerfile
+
 volumes:
   mongo_data: 
   postgres_data:
   pgadmin_data:
+
 
 

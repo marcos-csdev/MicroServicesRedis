@@ -19,26 +19,19 @@ namespace Discount.gRPC.Repositories
         }
         public async Task<Coupon> GetDiscountAsync(string productName)
         {
-            try
-            {
-                using var connection = GetConnectionString();
+            using var connection = GetConnectionString();
 
-                var query = "SELECT * FROM \"Coupon\" WHERE \"ProductName\" = @ProductName";
-                var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
-                (query, new { ProductName = productName });
+            var query = "SELECT * FROM \"Coupon\" WHERE \"ProductName\" = @ProductName";
+            var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
+            (query, new { ProductName = productName });
 
 
-                if (coupon == null)
-                    return new Coupon
-                    { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
+            if (coupon == null)
+                return new Coupon
+                { ProductName = "No Discount", Amount = 0, Description = "No Discount Desc" };
 
-                return coupon;
-            }
-            catch (Exception ex)
-            {
+            return coupon;
 
-                throw;
-            }
 
 
         }

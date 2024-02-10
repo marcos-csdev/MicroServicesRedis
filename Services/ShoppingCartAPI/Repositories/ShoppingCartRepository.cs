@@ -24,7 +24,7 @@ namespace ShoppingCartAPI.Repositories
             for (int i = 0; i < carts.Count; i++)
             {
                 var json = JsonConvert.SerializeObject(carts[i]);
-                _redisCache.SetAdd($"cart:{i}", json);
+                _redisCache.StringSet($"user", json);
             }
         }
 

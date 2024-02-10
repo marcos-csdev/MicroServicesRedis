@@ -80,7 +80,7 @@ namespace ShoppingCartAPI
             {
                 var options = new ConfigurationOptions
                 {
-                    EndPoints = { { "localhost", 6379 } },
+                    EndPoints = { { redisUrl!, 6379 } },
                     User = "default",  // use your Redis user. More info https://redis.io/docs/management/security/acl/
                     Password = "nopass", // use your Redis password
                     Ssl = false,

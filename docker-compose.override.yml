@@ -32,13 +32,14 @@ services:
     restart: always
     ports:
       - "6379:6379"
-      
+      #Composer must mirror all settings in appsettings.json
   shoppingcartapi:
     container_name: shoppingcartapi
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - "ConnectionStrings:Redis=redis://localhost:6379"
+      - "ConnectionStrings:Redis=redis-cache://localhost:6379"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc"
     ports:
         # EXTERNAL:INTERNAL PORT FORWARDING
       - "8001:8080"
@@ -54,7 +55,7 @@ services:
       - POSTGRES_DB=DiscountDb
     restart: always
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
@@ -68,5 +69,15 @@ services:
         - "5050:80"
     volumes:
       - pgadmin_data:/root/.pgadmin
-
+      
+  discount.grpc:
+    container_name: discount.grpc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - "ConnectionStrings:npgsql=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+    depends_on:
+      - discountdb
+    ports:
+      - "8003:8080"
 

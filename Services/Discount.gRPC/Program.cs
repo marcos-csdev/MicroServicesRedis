@@ -20,6 +20,11 @@ namespace Discount.gRPC
                 option.UseNpgsql(connectionString);
 
             });
+
+            builder.Services.Configure<DatabaseOptions>(options =>
+            {
+                options.ConnectionString = connectionString!;
+            });
             builder.Services
                 .AddScoped<IDiscountRepository, DiscountRepository>();
 

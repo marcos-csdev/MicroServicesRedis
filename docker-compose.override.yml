@@ -32,7 +32,8 @@ services:
     restart: always
     ports:
       - "6379:6379"
-      #env. variables must mirror all settings in appsettings.json
+
+  #env. variables must mirror all settings in appsettings.json
   shoppingcartapi:
     container_name: shoppingcartapi
     environment:

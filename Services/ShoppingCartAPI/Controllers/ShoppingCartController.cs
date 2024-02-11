@@ -44,7 +44,7 @@ namespace ShoppingCartAPI.Controllers
                 //recalculates the current total price in the cart
                 foreach (var item in shoppingCart.Items)
                 {
-                    var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
+                    var coupon = await _discountGrpcService.GetDiscountAsync(item.ProductName);
 
                     //removing price from total
                     item.Price -= coupon.Amount;

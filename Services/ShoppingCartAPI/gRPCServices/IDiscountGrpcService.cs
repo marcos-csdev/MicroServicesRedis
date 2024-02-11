@@ -4,6 +4,6 @@ namespace ShoppingCartAPI.gRPCServices
 {
     public interface IDiscountGrpcService
     {
-        Task<CouponModel> GetDiscount(string productName);
+        Task<CouponModel> GetDiscountAsync(string productName);
     }
 }

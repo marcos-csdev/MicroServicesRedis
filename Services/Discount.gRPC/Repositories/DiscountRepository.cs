@@ -9,17 +9,11 @@ namespace Discount.gRPC.Repositories
 {
     public class DiscountRepository(IConfiguration configuration) : IDiscountRepository
     {
-        private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        private readonly string _connectionString = configuration.GetConnectionString("npgsql")!;
 
-        private NpgsqlConnection GetConnectionString()
-        {
-            var connectionString = _configuration.GetConnectionString("npgsql");
-            return new NpgsqlConnection
-                (connectionString);
-        }
         public async Task<Coupon> GetDiscountAsync(string productName)
         {
-            using var connection = GetConnectionString();
+            using var connection = new NpgsqlConnection(_connectionString);
 
             var query = "SELECT * FROM \"Coupon\" WHERE \"ProductName\" = @ProductName";
             var coupon = await connection.QueryFirstOrDefaultAsync<Coupon>
@@ -38,11 +32,11 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> CreateDiscountAsync(Coupon coupon)
         {
-            using var connection = GetConnectionString();
+            using var connection = new NpgsqlConnection(_connectionString);
 
             var affected =
                 await connection.ExecuteAsync
-                    ("INSERT INTO \"Coupon\" (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
+                    ("INSERT INTO \"Coupon\" (\"ProductName\", \"Description\", \"Amount\") VALUES ('@ProductName', '@Description', '@Amount')",
                             new { coupon.ProductName, coupon.Description, coupon.Amount });
 
             if (affected == 0)
@@ -54,7 +48,7 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> UpdateDiscountAsync(Coupon coupon)
         {
-            using var connection = GetConnectionString();
+            using var connection = new NpgsqlConnection(_connectionString);
 
             var affected = await connection.ExecuteAsync
                     ("UPDATE \"Coupon\" SET \"ProductName\"=@ProductName, \"Description\" = @Description, \"Amount\" = @Amount WHERE \"Id\" = @Id",
@@ -68,7 +62,7 @@ namespace Discount.gRPC.Repositories
 
         public async Task<bool> DeleteDiscountAsync(string productName)
         {
-            using var connection = GetConnectionString();
+            using var connection = new NpgsqlConnection(_connectionString);
 
             var affected = await connection.ExecuteAsync("DELETE FROM \"Coupon\" WHERE \"ProductName\" = @ProductName",
                 new { productName });

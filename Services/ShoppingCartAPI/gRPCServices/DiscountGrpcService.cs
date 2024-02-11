@@ -6,7 +6,7 @@ namespace ShoppingCartAPI.gRPCServices
     {
         private readonly DiscountProtoService.DiscountProtoServiceClient _gRPCService = gRPCService;
 
-        public async Task<CouponModel> GetDiscount(string productName)
+        public async Task<CouponModel> GetDiscountAsync(string productName)
         {
             var request = new GetDiscountRequest { ProductName = productName };
 

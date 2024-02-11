@@ -22,7 +22,8 @@ namespace ShoppingCartAPI
 
             builder.Services.AddGrpcClient<DiscountProtoServiceClient>(option =>
             {
-                option.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSettings:DiscountUrl")!);
+                var url = builder.Configuration.GetValue<string>("GrpcSettings:DiscountUrl");
+                option.Address = new Uri(url!);
             });
             builder.Services.AddScoped<IDiscountGrpcService, DiscountGrpcService>();
             builder.Services.AddControllers();

@@ -32,14 +32,14 @@ services:
     restart: always
     ports:
       - "6379:6379"
-      #Composer must mirror all settings in appsettings.json
+      #env. variables must mirror all settings in appsettings.json
   shoppingcartapi:
     container_name: shoppingcartapi
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - "ConnectionStrings:Redis=redis-cache://localhost:6379"
-      - "GrpcSettings:DiscountUrl=http://discount.grpc"
+      - "ConnectionStrings:Redis=redis-cache"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc:8080"
     ports:
         # EXTERNAL:INTERNAL PORT FORWARDING
       - "8001:8080"
